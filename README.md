@@ -7,3 +7,5 @@ Install is easy, just throw the 'ectodo' file into /usr/local/bin, and put a fil
 You can create the file by running: echo '{ }' > ~/.todo.td
 
 Licence is GPL2
+
+![Alt text](screenshot.jpg?raw=true "Screenshot")

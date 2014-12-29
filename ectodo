@@ -27,9 +27,13 @@ def printtitlescreen():
   for i in range(int(columns)-15):
     print('▒', end="")
   print ('\033[1m\033[93m╔', end="")
-  for i in range(int(columns)-1):
+  for i in range(int(columns)-2):
     print('═', end="")
-  print ('\n║\033[0m')
+  print('╗')
+  print ('║', end="")
+  for i in range(int(columns)-2):
+    print(' ', end="")
+  print('║\033[0m')
 
 def printhelp():
   print('\n\n\033[93moptions:')
@@ -71,19 +75,32 @@ def enumitemselect(taskvariable,key):
   return itemslist
 
 def printTODOlist(taskvariable):
+  rows, columns = os.popen('stty size', 'r').read().split()
   sortedkeys = sorted(taskvariable.keys())
   for i in sortedkeys:
-    print('\033[1m\033[93m║\033[37m\033[1m  ▼┬ ' + i)
+    print('\033[1m\033[93m║\033[37m\033[1m  ▼┬ ' + i, end="")
+    for s in range(int(columns)-len(i)-7):
+      print(' ', end="")
+    print('\033[1m\033[93m║')
     for j in sorted(taskvariable[i]):
       if j != sorted(taskvariable[i])[-1]:
-        print('\033[1m\033[93m║\033[37m   ├─► \033[0m' + j)
+        print('\033[1m\033[93m║\033[37m   ├─► \033[0m' + j, end="")
+        for s in range(int(columns)-len(j)-9):
+          print(' ', end="")
+        print('\033[1m\033[93m║')
       else:
-        print('\033[1m\033[93m║\033[37m   └─► \033[0m' + j)
+        print('\033[1m\033[93m║\033[37m   └─► \033[0m' + j, end="")
+        for s in range(int(columns)-len(j)-9):
+          print(' ', end="")
+        print('\033[1m\033[93m║')
+    print('\033[1m\033[93m║', end="")
+    for s in range(int(columns)-2):
+      print(' ', end="")
     print('\033[1m\033[93m║')
   print ('\033[1m\033[93m╚', end="")
-  rows, columns = os.popen('stty size', 'r').read().split()
-  for i in range(int(columns)-1):
+  for i in range(int(columns)-2):
     print('═', end="")
+  print('╝')
 
 def createcategory(taskvariable):
   catname = input('What is the name of the new category? ')

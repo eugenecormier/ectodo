@@ -36,7 +36,7 @@ def printtitlescreen():
   print('║\033[0m')
 
 def printhelp():
-  print('\n\n\033[93moptions: nc=new category, dc=delete category, ni=new item, di=delete item, r=refresh screen, q=quit\n')
+  print('\033[93moptions: nc=new category, dc=delete category, ni=new item, di=delete item, r=refresh screen, q=quit')
 
 def readtasks(taskfile):
   f = open(taskfile, 'r')

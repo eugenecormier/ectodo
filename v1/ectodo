@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+
+##############################################
+## IMPORTS
+##############################################
+
+import os
+import ast
+
+
+##############################################
+## VARIABLES
+##############################################
+
+taskfile = os.path.expanduser('~/.todo.td')
+rows, columns = os.popen('stty size', 'r').read().split()
+
+
+##############################################
+## FUNCTIONS
+##############################################
+
+def printtitlescreen():
+  rows, columns = os.popen('stty size', 'r').read().split()
+  os.system('clear')
+  print ('\033[1m\033[93m\033[94m▒▒ \033[1m\033[93mectodo v1.0 \033[94m', end="")
+  for i in range(int(columns)-15):
+    print('▒', end="")
+  print ('\033[1m\033[93m╔', end="")
+  for i in range(int(columns)-2):
+    print('═', end="")
+  print('╗')
+  print ('║', end="")
+  for i in range(int(columns)-2):
+    print(' ', end="")
+  print('║\033[0m')
+
+def printhelp():
+  print('\033[93moptions: nc=new category, dc=delete category, ni=new item, di=delete item, r=refresh screen, q=quit')
+
+def readtasks(taskfile):
+  f = open(taskfile, 'r')
+  return f.readline()
+  f.close()
+
+def writetasks(taskfile,taskvariable):
+  f = open(taskfile, 'w')
+  f.write(str(taskvariable))
+  f.close()
+
+def enumcategoryselect(taskvariable):
+  sortedkeys = sorted(taskvariable.keys())
+  num = 1
+  keyslist = [ ]
+  for i in sortedkeys:
+    print( str(num) + ' ++ ' + i)
+    keyslist.append(i)
+    num += 1
+  return keyslist
+
+def enumitemselect(taskvariable,key):
+  sortedkeys = sorted(taskvariable.keys())
+  num = 1
+  itemslist = [ ]
+  for i in taskvariable[sortedkeys[key]]:
+    print(str(num) + ' ' + i)
+    itemslist.append(i)
+    num += 1
+  return itemslist
+
+def printTODOlist(taskvariable):
+  rows, columns = os.popen('stty size', 'r').read().split()
+  sortedkeys = sorted(taskvariable.keys())
+  for i in sortedkeys:
+    print('\033[1m\033[93m║\033[37m\033[1m  ┌ ' + i, end="")
+    for s in range(int(columns)-len(i)-6):
+      print(' ', end="")
+    print('\033[1m\033[93m║')
+    for j in sorted(taskvariable[i]):
+      if j != sorted(taskvariable[i])[-1]:
+        print('\033[1m\033[93m║\033[37m  ├─ \033[0m' + j, end="")
+        for s in range(int(columns)-len(j)-7):
+          print(' ', end="")
+        print('\033[1m\033[93m║')
+      else:
+        print('\033[1m\033[93m║\033[37m  └─ \033[0m' + j, end="")
+        for s in range(int(columns)-len(j)-7):
+          print(' ', end="")
+        print('\033[1m\033[93m║')
+    print('\033[1m\033[93m║', end="")
+    for s in range(int(columns)-2):
+      print(' ', end="")
+    print('\033[1m\033[93m║')
+  print ('\033[1m\033[93m╚', end="")
+  for i in range(int(columns)-2):
+    print('═', end="")
+  print('╝')
+
+def createcategory(taskvariable):
+  catname = input('What is the name of the new category? ')
+  taskvariable[catname] = [ ]
+  writetasks(taskfile,taskvariable)
+
+def deletecategory(taskvariable):
+  keyslist = enumcategoryselect(taskvariable)
+  delname = input('Which category would you like to delete? ')
+  del taskvariable[keyslist[int(delname)-1]]
+  writetasks(taskfile,taskvariable)
+
+def createitem(taskvariable):
+  keyslist = enumcategoryselect(taskvariable)
+  keyname = input('In which category would you like to create a new item? ')
+  itemname = input('What is the name of the new item? ')
+  templist = taskvariable[keyslist[int(keyname)-1] ]
+  templist.append(itemname)
+  taskvariable[ keyslist[ int(keyname)-1 ] ] = templist
+  writetasks(taskfile,taskvariable)
+
+def deleteitem(taskvariable):
+  keyslist = enumcategoryselect(taskvariable)
+  keyname = input('In which category would you like to delete an item? ')
+  itemslist = enumitemselect(taskvariable,int(keyname)-1)
+  itemname = input('Which item would you like to delete? ')
+  itemslist.remove(itemslist[int(itemname)-1])
+  taskvariable[ keyslist[ int(keyname)-1 ] ] = itemslist
+  writetasks(taskfile,taskvariable)
+
+def printheaders(taskvariable):
+  printtitlescreen()
+  printTODOlist(taskvariable)
+  printhelp()
+
+
+###############################################
+
+def main():
+  taskvariable = ast.literal_eval(readtasks(taskfile))
+  printheaders(taskvariable)
+  loop = True
+  while loop == True:
+    response = input('Command: ')
+    if response == 'r':
+      printheaders(taskvariable)
+    elif response == 'ni':
+      createitem(taskvariable)
+      printheaders(taskvariable)
+    elif response == 'di':
+      deleteitem(taskvariable)
+      printheaders(taskvariable)
+    elif response == 'nc':
+      createcategory(taskvariable)
+      printheaders(taskvariable)
+    elif response == 'dc':
+      deletecategory(taskvariable)
+      printheaders(taskvariable)
+    elif response == 'q':
+      loop = False
+    else:
+      input(response + ' is not a valid response, hit enter to continue')
+      printheaders(taskvariable)
+
+main()

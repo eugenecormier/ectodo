@@ -171,7 +171,7 @@ def createitem(tasks,myscreen,rows,taskfile):
   tempb = itemnametemp[2:-1]
   templist = tasks[sortedkeys[int(temp)-1] ]
   templist.append(tempb)
-  tasks[ sortedkeys[ int(temp)-1 ] ] = templist
+  tasks[ sortedkeys[ int(temp)-1 ] ] = sorted(templist)
   writetasks(taskfile,tasks)
 
 def delitem(tasks,myscreen,rows,taskfile):

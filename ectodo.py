@@ -217,6 +217,9 @@ def delitem(tasks,myscreen,rows,taskfile):
 def main():
   # open save file for r/w
   taskfile = os.path.expanduser('~/.todo.td')
+  if os.path.isfile(taskfile) == 0:
+    tasks = {}
+    writetasks(taskfile,tasks)
   # load file into 'task' dictionary
   tasks = ast.literal_eval(readtasks(taskfile))
   # read 'rows' and 'columns' from term

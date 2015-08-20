@@ -134,8 +134,10 @@ def createcategory(tasks,myscreen,rows,taskfile):
   myscreen.addstr(int(rows)-2, 1, " NEW CATEGORY: ", curses.color_pair(2))
   myscreen.refresh()
   curses.echo()
+  curses.curs_set(1)
   catname = myscreen.getstr(int(rows)-2, 16)
   curses.noecho()
+  curses.curs_set(0)
   cattemp = str(catname)
   tasks[cattemp[2:-1]] = [ ]
   writetasks(taskfile,tasks)
@@ -147,8 +149,10 @@ def delcategory(tasks,myscreen,rows,taskfile):
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
   curses.echo()
+  curses.curs_set(1)
   delcatnum = myscreen.getstr(int(rows)-2, 16)
   curses.noecho()
+  curses.curs_set(0)
   delcatnumtemp = str(delcatnum)
   temp = delcatnumtemp[2:-1]
   del tasks[sortedkeys[int(temp)-1]]
@@ -161,12 +165,15 @@ def createitem(tasks,myscreen,rows,taskfile):
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
   curses.echo()
+  curses.curs_set(1)
   catnum = myscreen.getstr(int(rows)-2, 47)
   catnumtemp = str(catnum)
   temp = int(catnumtemp[2:-1])
   myscreen.addstr(int(rows)-2, 1, " NEW ITEM:                                        ", curses.color_pair(2))
   myscreen.refresh()
   itemname = myscreen.getstr(int(rows)-2, 12)
+  curses.noecho()
+  curses.curs_set(0)
   itemnametemp = str(itemname)
   tempb = itemnametemp[2:-1]
   templist = tasks[sortedkeys[int(temp)-1] ]
@@ -181,15 +188,19 @@ def delitem(tasks,myscreen,rows,taskfile):
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
   curses.echo()
+  curses.curs_set(1)
   delcatnum = myscreen.getstr(int(rows)-2, 46)
   curses.noecho()
+  curses.curs_set(0)
   delcatnumtemp = str(delcatnum)
   temp = delcatnumtemp[2:-1]
   drawscreen(myscreen,rows,tasks,2,temp)
   myscreen.addstr(int(rows)-2, 1, " NEW ITEM: Delete which item ", curses.color_pair(2))
   curses.echo()
+  curses.curs_set(1)
   delitemnum = myscreen.getstr(int(rows)-2, 30)
   curses.noecho()
+  curses.curs_set(0)
   delitemnumtemp = str(delitemnum)
   tempb = delitemnumtemp[2:-1]
   itemslist = [ ]

@@ -104,7 +104,7 @@ def menu(myscreen,res,tasks,rows,columns,taskfile):
         continue
       # New Item
       elif resb == 105:
-        createitem(tasks,myscreen,rows,taskfile)
+        createitem(tasks,myscreen,rows,columns,taskfile)
         continue
     # Delete
     elif res == 100:
@@ -165,7 +165,7 @@ def delcategory(tasks,myscreen,rows,taskfile):
   del tasks[sortedkeys[int(temp)-1]]
   writetasks(taskfile,tasks)
 
-def createitem(tasks,myscreen,rows,taskfile):
+def createitem(tasks,myscreen,rows,columns,taskfile):
   # 1 makes categories enumerated
   drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " NEW ITEM: Create new item in which category? ", curses.color_pair(2))

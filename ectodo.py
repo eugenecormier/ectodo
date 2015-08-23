@@ -113,11 +113,11 @@ def menu(myscreen,res,tasks,rows,columns,taskfile):
       resb = myscreen.getch()
       # Delete Category
       if resb == 99:
-        delcategory(tasks,myscreen,rows,taskfile)
+        delcategory(tasks,myscreen,rows,columns,taskfile)
         continue
       # Delete item
       if resb == 105:
-        delitem(tasks,myscreen,rows,taskfile)
+        delitem(tasks,myscreen,rows,columns,taskfile)
         continue
     # Quit
     elif res == 113:
@@ -149,7 +149,7 @@ def createcategory(tasks,myscreen,rows,taskfile):
   tasks[cattemp[2:-1]] = [ ]
   writetasks(taskfile,tasks)
 
-def delcategory(tasks,myscreen,rows,taskfile):
+def delcategory(tasks,myscreen,rows,columns,taskfile):
   # 1 makes categories enumerated
   drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " DEL CATEGORY: ", curses.color_pair(2))
@@ -188,7 +188,7 @@ def createitem(tasks,myscreen,rows,columns,taskfile):
   tasks[ sortedkeys[ int(temp)-1 ] ] = sorted(templist)
   writetasks(taskfile,tasks)
 
-def delitem(tasks,myscreen,rows,taskfile):
+def delitem(tasks,myscreen,rows,columns,taskfile):
   # 1 makes categories enumerated
   drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " DEL ITEM: Delete an item in which category? ", curses.color_pair(2))

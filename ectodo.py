@@ -29,11 +29,11 @@ def initialize(myscreen):
   curses.init_pair(2, curses.COLOR_WHITE, -1)
   curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLUE)
 
-def drawscreen(myscreen,rows,tasks,var,temp):
+def drawscreen(myscreen,rows,columns,tasks,var,temp):
   # var: 0=no enum, 1=enumerated categories, 2=enumerated items
   # start up curses window with borders and headers/footers
   myscreen.clear()
-  #  ║═
+  #   ║═
   myscreen.border(0,0,0,0,0,0,0,0)
   myscreen.addstr(0, 1, " ectodo v2 ", curses.color_pair(1) | curses.A_BOLD)
   myscreen.addstr(int(rows)-1, 1, " options: nc=new category, dc=delete category, ni=new item, di=delete item, q=quit ", curses.color_pair(1) | curses.A_BOLD)
@@ -51,28 +51,31 @@ def drawscreen(myscreen,rows,tasks,var,temp):
     if var == 1:
       myscreen.addstr(line, startpos - 2, str(enum), curses.color_pair(2))
       enum = enum + 1
-    myscreen.addstr(line, startpos, "┌", curses.color_pair(2))
-    myscreen.addstr(line, startpos + 2, i, curses.color_pair(2) | curses.A_BOLD )
-    myscreen.refresh()
+    if line < int(rows) and startpos < int(columns)-2:
+      myscreen.addstr(line, startpos, "┌", curses.color_pair(2))
+      myscreen.addstr(line, startpos + 2, i, curses.color_pair(2) | curses.A_BOLD )
+      myscreen.refresh()
     for j in sorted(tasks[i]):
       line = line + 1
       if line == int(rows) - 3:
         line = 3
         startpos = 90
       if j != sorted(tasks[i])[-1]:
-        myscreen.addstr(line, startpos, "├─", curses.color_pair(2))
-        myscreen.addstr(line, startpos + 3, j)
-        if var == 2:
-          if i == sortedkeys[int(temp)-1]:
-            myscreen.addstr(line, startpos - 2, str(enum), curses.color_pair(2))
-            enum = enum + 1
+        if line < int(rows) and startpos < int(columns)-3:
+          myscreen.addstr(line, startpos, "├─", curses.color_pair(2))
+          myscreen.addstr(line, startpos + 3, j)
+          if var == 2:
+            if i == sortedkeys[int(temp)-1]:
+              myscreen.addstr(line, startpos - 2, str(enum), curses.color_pair(2))
+              enum = enum + 1
       else:
-        myscreen.addstr(line, startpos, "└─", curses.color_pair(2))
-        myscreen.addstr(line, startpos + 3, j)
-        if var == 2:
-          if i == sortedkeys[int(temp)-1]:
-            myscreen.addstr(line, startpos - 2, str(enum), curses.color_pair(2))
-            enum = enum + 1
+        if line < int(rows) and startpos < int(columns)-3:
+          myscreen.addstr(line, startpos, "└─", curses.color_pair(2))
+          myscreen.addstr(line, startpos + 3, j)
+          if var == 2:
+            if i == sortedkeys[int(temp)-1]:
+              myscreen.addstr(line, startpos - 2, str(enum), curses.color_pair(2))
+              enum = enum + 1
     line = line + 1
     if line == int(rows) - 3:
       line = 2
@@ -85,10 +88,10 @@ def killscreen(myscreen):
   curses.echo()
   curses.endwin()
 
-def menu(myscreen,res,tasks,rows,taskfile):
+def menu(myscreen,res,tasks,rows,columns,taskfile):
   loop = True
   while loop == True:
-    drawscreen(myscreen,rows,tasks,0,0)
+    drawscreen(myscreen,rows,columns,tasks,0,0)
     res = myscreen.getch()
     # New
     if res == 110:
@@ -119,6 +122,10 @@ def menu(myscreen,res,tasks,rows,taskfile):
     # Quit
     elif res == 113:
       break
+    # Auto-resize
+    elif res == curses.KEY_RESIZE:
+      rows, columns = os.popen('stty size', 'r').read().split()
+      continue
 
 def readtasks(taskfile):
   f = open(taskfile, 'r')
@@ -144,7 +151,7 @@ def createcategory(tasks,myscreen,rows,taskfile):
 
 def delcategory(tasks,myscreen,rows,taskfile):
   # 1 makes categories enumerated
-  drawscreen(myscreen,rows,tasks,1,0)
+  drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " DEL CATEGORY: ", curses.color_pair(2))
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
@@ -160,7 +167,7 @@ def delcategory(tasks,myscreen,rows,taskfile):
 
 def createitem(tasks,myscreen,rows,taskfile):
   # 1 makes categories enumerated
-  drawscreen(myscreen,rows,tasks,1,0)
+  drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " NEW ITEM: Create new item in which category? ", curses.color_pair(2))
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
@@ -183,7 +190,7 @@ def createitem(tasks,myscreen,rows,taskfile):
 
 def delitem(tasks,myscreen,rows,taskfile):
   # 1 makes categories enumerated
-  drawscreen(myscreen,rows,tasks,1,0)
+  drawscreen(myscreen,rows,columns,tasks,1,0)
   myscreen.addstr(int(rows)-2, 1, " DEL ITEM: Delete an item in which category? ", curses.color_pair(2))
   myscreen.refresh()
   sortedkeys = sorted(tasks.keys())
@@ -194,7 +201,7 @@ def delitem(tasks,myscreen,rows,taskfile):
   curses.curs_set(0)
   delcatnumtemp = str(delcatnum)
   temp = delcatnumtemp[2:-1]
-  drawscreen(myscreen,rows,tasks,2,temp)
+  drawscreen(myscreen,rows,columns,tasks,2,temp)
   myscreen.addstr(int(rows)-2, 1, " NEW ITEM: Delete which item ", curses.color_pair(2))
   curses.echo()
   curses.curs_set(1)
@@ -227,9 +234,9 @@ def main():
   # initiate curses screen
   myscreen = curses.initscr()
   initialize(myscreen)
-  res = drawscreen(myscreen,rows,tasks,0,0)
+  res = drawscreen(myscreen,rows,columns,tasks,0,0)
   # run main menu loop
-  menu(myscreen,res,tasks,rows,taskfile)
+  menu(myscreen,res,tasks,rows,columns,taskfile)
   # quit program
   killscreen(myscreen)
 
